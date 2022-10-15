@@ -1,0 +1,61 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: wf-exercise-template-
+spec:
+  entrypoint: taskC
+  templates:
+    - name: taskA
+      script:
+        image: python:3.8-slim
+        command: [python]
+        source: |
+          print("Task A executed successfully with script template")
+    - name: taskB
+      container:
+        image: python:3.8-slim
+        command: [echo, "Task B executed successfully using container template"]
+    - name: taskC
+      resource:
+        action: create
+        manifest: |
+          apiVersion: argoproj.io/v1alpha1
+          kind: Workflow
+          metadata:
+            generateName: wf-resource-created-
+          spec:
+            entrypoint: test-template
+            templates:
+              - name: test-template
+                script:
+                  image: python:3.8-slim
+                  command: [python]
+                  source: |
+                    print("Task C executed successfully with resource template")
+    - name: cocurrent-tasks
+      dag:
+        tasks:
+          - name: taskB1
+            template: taskB
+          - name: taskC1
+            template: taskC
+          - name: taskB2
+            template: taskB
+            dependencies: [taskB1]
+          - name: taskB3
+            template: taskB
+            dependencies: [taskB2]
+    - name: taskD
+      suspend:
+        duration: "10s"
+    - name: entrypoint
+      steps:
+        - - name: step1
+            template: taskA
+        - - name: step2
+            template: cocurrent-tasks
+        - - name: step3
+            template: taskD
+        - - name: step4
+            template: taskA
+        
