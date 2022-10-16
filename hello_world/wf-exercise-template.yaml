@@ -3,7 +3,7 @@ kind: Workflow
 metadata:
   generateName: wf-exercise-template-
 spec:
-  entrypoint: taskC
+  entrypoint: entrypoint
   templates:
     - name: taskA
       script:

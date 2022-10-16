@@ -13,7 +13,7 @@ spec:
             template: task-template
           - name: step3
             template: task-template
-        - - name: delay
+        - - name: delay-step
             template: delay-template
         - - name: step4
             template: task-template
